@@ -1,3 +1,5 @@
+// Expected usage:
+// yarn build && node rag.js
 import "cheerio";
 import dotenv from "dotenv";
 import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
@@ -39,3 +41,4 @@ const ragChain = await createStuffDocumentsChain({
 });
 
 const retrievedDocs = await retriever.invoke("what is task decomposition");
+console.log(retrievedDocs);
