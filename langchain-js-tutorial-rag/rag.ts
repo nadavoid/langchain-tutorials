@@ -13,17 +13,22 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 
 dotenv.config();
 
+const selector = "article";
 const loader = new CheerioWebBaseLoader(
-  "https://lilianweng.github.io/posts/2023-06-23-agent/"
+  "https://lilianweng.github.io/posts/2023-06-23-agent/",
+  {
+    selector: selector,
+  }
 );
 
 const docs = await loader.load();
 
 const textSplitter = new RecursiveCharacterTextSplitter({
-  chunkSize: 1000,
-  chunkOverlap: 200,
+  chunkSize: 200,
+  chunkOverlap: 50,
 });
 const splits = await textSplitter.splitDocuments(docs);
+console.log('number of splits', splits.length);
 const vectorStore = await MemoryVectorStore.fromDocuments(
   splits,
   new OpenAIEmbeddings()
@@ -40,5 +45,11 @@ const ragChain = await createStuffDocumentsChain({
   outputParser: new StringOutputParser(),
 });
 
-const retrievedDocs = await retriever.invoke("what is task decomposition");
-console.log(retrievedDocs);
+const question = "what are the types of memory";
+const retrievedDocs = await retriever.invoke(question);
+console.log('retrievedDocs', retrievedDocs);
+const answer = await ragChain.invoke({
+  question: question,
+  context: retrievedDocs,
+});
+console.log('answer', answer);
