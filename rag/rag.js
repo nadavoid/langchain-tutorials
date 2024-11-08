@@ -9,7 +9,9 @@ import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
 import { pull } from "langchain/hub";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
-dotenv.config();
+dotenv.config({
+    path: "../.env"
+});
 const selector = "article";
 const loader = new CheerioWebBaseLoader("https://lilianweng.github.io/posts/2023-06-23-agent/", {
     selector: selector,

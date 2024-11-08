@@ -11,7 +11,8 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/langchain-js-tutorial-rag/rag.js"
+      "program": "${workspaceFolder}/rag/rag.js",
+      "cwd": "${workspaceFolder}/rag"
     }
   ]
 }
