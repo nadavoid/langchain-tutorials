@@ -11,7 +11,9 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 
-dotenv.config();
+dotenv.config({
+  path: "../.env"
+});
 
 const selector = "article";
 const loader = new CheerioWebBaseLoader(
