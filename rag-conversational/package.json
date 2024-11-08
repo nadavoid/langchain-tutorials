@@ -9,10 +9,12 @@
     "dotenv": "^16.4.5"
   },
   "devDependencies": {
+    "tsx": "^4.19.2",
     "typescript": "^5.6.3"
   },
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "start": "tsx index.ts"
   }
 }

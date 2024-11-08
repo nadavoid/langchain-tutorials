@@ -9,6 +9,6 @@
     "moduleResolution": "NodeNext"
   },
   "include": [
-    "rag.ts"
+    "index.ts"
   ]
 }
