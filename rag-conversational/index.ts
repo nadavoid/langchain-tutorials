@@ -75,6 +75,7 @@ const ragChain = await createRetrievalChain({
 const response = await ragChain.invoke({
   input: "What is the most complex idea in this article?"
 });
+console.log({'response from basic qa': response.answer});
 
 ////////////////////////////////
 // Version with chat history. //
@@ -125,6 +126,7 @@ const chatChain = await createRetrievalChain({
 });
 
 // Chat history that will be updated as the conversation proceeds.
+// In this version, we are maintaining it ourselves, manually.
 let chatHistory: BaseMessage[] = [];
 // Initial question. Variable will be reused for new questions.
 let question = "What is Task Decomposition?";
@@ -163,3 +165,46 @@ chatHistory = chatHistory.concat([
   new AIMessage(aiResponse.answer),
 ]);
 console.log({answer3: aiResponse.answer});
+
+// Manage history with state, for more concise and DRY code.
+// RunnableWithMessageHistory tracks messages for us, so that we
+// don't have to track it ourselves. It's also kept distinct by session ids.
+import { RunnableWithMessageHistory } from "@langchain/core/runnables";
+import { ChatMessageHistory } from "langchain/stores/message/in_memory";
+
+const chatHistoryForState = new ChatMessageHistory();
+
+const conversationalRagChain = new RunnableWithMessageHistory({
+  // Same runnable as when we were manually maintaining chat history.
+  runnable: chatChain,
+  // Session ID for getting chat history.
+  getMessageHistory: (_sessionId) => chatHistoryForState,
+  inputMessagesKey: "input",
+  historyMessagesKey: "chat_history",
+  outputMessagesKey: "answer",
+});
+
+// Arbitrary session id for this example.
+const sessionId = "session1";
+// Storing common config in a const since we're using it repeatedly.
+const ragConfig = {configurable: {sessionId: sessionId}};
+question = "What is task decomposition?";
+let stateResult = await conversationalRagChain.invoke(
+  {input: question},
+  ragConfig
+);
+console.log({'stateResult Answer 1': stateResult.answer});
+
+question = "What are common ways of doing it?";
+stateResult = await conversationalRagChain.invoke(
+  {input: question},
+  ragConfig
+);
+console.log({'stateResult Answer 2': stateResult.answer});
+
+question = "Choose an unusual way and go into greater detail.";
+stateResult = await conversationalRagChain.invoke(
+  {input: question},
+  ragConfig
+);
+console.log({'stateResult Answer 3': stateResult.answer});
