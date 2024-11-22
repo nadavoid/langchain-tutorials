@@ -47,7 +47,6 @@ const vectorstore = await MemoryVectorStore.fromDocuments(
 );
 const retriever = vectorstore.asRetriever();
 
-// 2. Incorporate the retriever into a question-answering chain.
 const systemPrompt =
   "You are an assistant for question-answering tasks. " +
   "Use the following pieces of retrieved context to answer " +
@@ -57,6 +56,7 @@ const systemPrompt =
   "\n\n" +
   "{context}";
 
+// 2. Incorporate the retriever into a basic question-answering chain.
 const prompt = ChatPromptTemplate.fromMessages([
   ["system", systemPrompt],
   ["human", "{input}"],
@@ -138,6 +138,7 @@ chatHistory = chatHistory.concat([
   new HumanMessage(question),
   new AIMessage(aiResponse.answer),
 ]);
+console.log({answer1: aiResponse.answer});
 
 // Repeat question, response, and update history pattern.
 question = "What are common ways of doing it?";
@@ -149,6 +150,7 @@ chatHistory = chatHistory.concat([
   new HumanMessage(question),
   new AIMessage(aiResponse.answer),
 ]);
+console.log({answer2: aiResponse.answer});
 
 // Repeat question, response, and update history pattern again.
 question = "Of those, pick one and go into more detail";
@@ -160,5 +162,4 @@ chatHistory = chatHistory.concat([
   new HumanMessage(question),
   new AIMessage(aiResponse.answer),
 ]);
-
-console.log(aiResponse.answer);
+console.log({answer3: aiResponse.answer});
