@@ -23,6 +23,22 @@
     },
 
     {
+      "name": "Launch rag-agent via Yarn",
+      "request": "launch",
+      "runtimeArgs": [
+        "tsx"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+
+      "program": "${workspaceFolder}/rag-conversational/agent.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}/rag-conversational"
+    },
+
+    {
       "type": "node",
       "request": "launch",
       "name": "Launch RAG",
