@@ -39,3 +39,13 @@ const vectorStore = await MemoryVectorStore.fromDocuments(
 const question = "What are the approaches to Task Decomposition?";
 const docs2 = await vectorStore.similaritySearch(question);
 console.log({docsFromVectorStore: docs2.length});
+
+// Add chat.
+import { ChatOllama } from "@langchain/ollama";
+// The current default model for ChatOllama is llama3.
+// Install it with `ollama run llama3`.
+const ollamaLlm = new ChatOllama();
+const response = await ollamaLlm.invoke(
+  "Simulate a rap battle between Stephen Colber and John Oliver"
+);
+console.log({rapResponse: response.content});
