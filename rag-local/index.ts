@@ -14,13 +14,13 @@ import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/
 const loader = new CheerioWebBaseLoader(
   "https://lilianweng.github.io/posts/2023-06-23-agent/"
 );
-const docs = await loader.load();
+const sourceDocs = await loader.load();
 
 const textSplitter = new RecursiveCharacterTextSplitter({
   chunkSize: 500,
   chunkOverlap: 50,
 });
-const allSplits = await textSplitter.splitDocuments(docs);
+const allSplits = await textSplitter.splitDocuments(sourceDocs);
 console.log({totalSplits: allSplits.length});
 
 import { OllamaEmbeddings } from "@langchain/ollama";
@@ -37,15 +37,32 @@ const vectorStore = await MemoryVectorStore.fromDocuments(
   embeddings
 );
 const question = "What are the approaches to Task Decomposition?";
-const docs2 = await vectorStore.similaritySearch(question);
-console.log({docsFromVectorStore: docs2.length});
+const contextDocs = await vectorStore.similaritySearch(question);
+console.log({docsFromVectorStore: contextDocs.length});
 
 // Add chat.
 import { ChatOllama } from "@langchain/ollama";
 // The current default model for ChatOllama is llama3.
 // Install it with `ollama run llama3`.
-const ollamaLlm = new ChatOllama();
-const response = await ollamaLlm.invoke(
-  "Simulate a rap battle between Stephen Colber and John Oliver"
+// View other installed models with `ollama list`.
+const ollamaLlm = new ChatOllama({
+  // model: 'mistral',
+  model: 'llama3.2',
+});
+
+// Use Local LLM in a chain.
+import { PromptTemplate } from "@langchain/core/prompts";
+const prompt = PromptTemplate.fromTemplate(
+  "Summarize the main themes in these retrieved docs: {context}"
 );
-console.log({rapResponse: response.content});
+import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+const chain = await createStuffDocumentsChain({
+  llm: ollamaLlm,
+  outputParser: new StringOutputParser(),
+  prompt: prompt,
+});
+const answer = await chain.invoke({
+  context: contextDocs,
+});
+console.log({answer})
