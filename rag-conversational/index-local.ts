@@ -1,22 +1,22 @@
 /**
  * Usage:
- * yarn tsx index.ts
+ * yarn tsx index-local.ts
  */
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatOllama } from "@langchain/ollama";
 import dotenv from "dotenv";
 dotenv.config({
   path: '../.env',
 });
 
-const llm = new ChatOpenAI({
-  model: "gpt-4o-mini",
+const llm = new ChatOllama({
+  model: "llama3.2",
   temperature: 0,
 });
 
 import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import { OpenAIEmbeddings } from "@langchain/openai";
+import { OllamaEmbeddings } from "@langchain/ollama";
 import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
 import { createRetrievalChain } from "langchain/chains/retrieval";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
@@ -43,7 +43,7 @@ const textSplitter = new RecursiveCharacterTextSplitter({
 const splits = await textSplitter.splitDocuments(docs);
 const vectorstore = await MemoryVectorStore.fromDocuments(
   splits,
-  new OpenAIEmbeddings()
+  new OllamaEmbeddings()
 );
 const retriever = vectorstore.asRetriever();
 
